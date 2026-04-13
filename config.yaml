@@ -1,0 +1,77 @@
+paths:
+  data_file: data/add10.csv
+  external_test_file: data/external_test.csv
+  output_dir: outputs
+  model_dir: outputs/models
+  prediction_dir: outputs/predictions
+  scaler_dir: outputs/scalers
+
+data:
+  encoding: gbk
+  time_column: Time
+  max_gap_seconds: 300
+  train_ratio: 0.7
+  val_ratio: 0.2
+  test_step: 2
+
+sequence:
+  input_steps: 360
+  output_steps: 2
+
+training:
+  batch_size: 1024
+  epochs: 100
+  patience: 10
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  grad_clip_norm: 1.0
+  use_amp: true
+
+model:
+  d_model: 256
+  n_head: 8
+  num_encoder_layers: 3
+  dim_feedforward: 512
+  dropout: 0.25
+  max_seq_len: 460
+  use_pe: true
+
+physics:
+  nominal_capacity_ah: 135.0
+  delta_t_s: 2.0
+  v_min_limit: 2.5
+  v_max_limit: 3.65
+  w_p2d_voltage: 0.1
+  w_coulomb_soc: 0.05
+  r_ohmic: 0.0015
+  r_ct_base: 0.006
+  r_ct_ext: 0.1
+  tau_diffusion: 1800.0
+  ocv_coeffs: [-0.5, 1.2, -0.8, 0.1, 3.25]
+
+dataset:
+  feature_columns:
+    - Cell voltage
+    - Cell temperature
+    - Total current
+    - Total voltage
+    - SOC
+  target_columns:
+    - Cell voltage
+    - Cell temperature
+    - SOC
+  current_column: Total current
+  soc_column: SOC
+  voltage_target: Cell voltage
+  soc_target: SOC
+
+experiments:
+  - name: baseline
+    use_pe: true
+    use_physical: true
+  - name: no_pe
+    use_pe: false
+    use_physical: true
+  - name: no_spm
+    use_pe: true
+    use_physical: false
